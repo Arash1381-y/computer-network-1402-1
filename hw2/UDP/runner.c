@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <malloc.h>
 #include <omp.h>
+#include <time.h>
 
 #include "dns_loader.h"
 #include "udp_socket_binder.h"
@@ -11,12 +12,13 @@
 #include "dns_query_resolver.h"
 
 
-#ifndef PARALLEL_MODE
-#define PARALLEL_MODE 0
+#ifdef PARALLEL_MODE
+#define PORT 7654
 #endif
 
-#ifndef PORT
-#define PORT 1234
+#ifndef PARALLEL_MODE
+#define PARALLEL_MODE 0
+#define PORT 4567
 #endif
 
 #ifndef PATH
@@ -28,6 +30,25 @@ void thread_serve(dns_resource_record_t *dns_resource_records, size_t dns_resour
                   struct sockaddr_in *client_addr);
 
 int main() {
+
+
+    // ============================= CONFIG ============================ //
+
+    printf("\033[34m[_INFO_]\033[0m listening on port %d\n", PORT);
+    printf("\033[34m[_INFO_]\033[0m loading DNS server data from %s\n", PATH);
+
+    if (PARALLEL_MODE) {
+        printf("\033[34m[_INFO_]\033[0m running in parallel mode\n");
+        printf("\033[34m[_INFO_]\033[0m number of threads : %d\n", omp_get_num_procs());
+    } else {
+        printf("\033[34m[_INFO_]\033[0m running in sequential mode\n");
+    }
+
+    printf("\033[31m[_INFO_] CHANGE CONFIG BY REDEFINING FLAGS IN COMPILE TIME \n");
+    printf("----------------------------------------------\n");
+    // ================================================================== //
+
+
     // Load DNS server data:
     dns_resource_record_t *dns_resource_records = malloc(sizeof(dns_resource_record_t) * 10);
     size_t dns_resource_records_size = 10;
@@ -36,8 +57,6 @@ int main() {
         return -1;
     }
 
-
-
     // Create UDP socket:
     int socket_desc;
     struct sockaddr_in server_addr, client_addr;
@@ -45,13 +64,10 @@ int main() {
 
 
     // Receive client's message:
-#pragma omp parallel if(PARALLEL_MODE) default(none)  shared(dns_resource_records, dns_resource_records_size, socket_desc, client_addr) num_threads(omp_get_num_procs())
+#pragma omp parallel if(PARALLEL_MODE) default(none)  firstprivate(socket_desc, client_addr, dns_resource_records, dns_resource_records_size) num_threads(omp_get_num_procs())
     {
-#pragma omp task default(none) shared(dns_resource_records, dns_resource_records_size, socket_desc, client_addr)
-        {
-            printf("\033[34m[_INFO_]\033[0m thread %d started\n", omp_get_thread_num());
-            thread_serve(dns_resource_records, dns_resource_records_size, socket_desc, &client_addr);
-        }
+        printf("\033[34m[_INFO_]\033[0m thread %d started\n", omp_get_thread_num());
+        thread_serve(dns_resource_records, dns_resource_records_size, socket_desc, &client_addr);
     }
 
 
@@ -98,14 +114,13 @@ void thread_serve(dns_resource_record_t *dns_resource_records, size_t dns_resour
         size_t offset;
         stringify_dns_message(&response, server_message, &offset);
 
-
         if (sendto(socket_desc, server_message, offset, 0,
                    (struct sockaddr *) client_addr, client_struct_length) < 0) {
             printf("\033[31m[_ERROR_]\033[0m QUERY %hu: can not send message.\n", response.header.identifier);
             continue;
         }
 
-        printf("\033[32m[_SUCCESS_]\033[0m QUERY %hu: respond sent to query with IP: %s, PORT: %d\n",
+        printf("\033[34m[_INFO_]\033[0m QUERY %hu: message sent to IP : %s and port : %d\n",
                response.header.identifier, inet_ntoa((*client_addr).sin_addr), ntohs((*client_addr).sin_port));
     }
 }

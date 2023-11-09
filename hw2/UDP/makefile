@@ -13,10 +13,10 @@ $(shell mkdir -p out)
 
 
 seq: $(files)
-	$(CC) $(CFLAGS) -o ./out/$@ $^
+	$(CC) $(CFLAGS) -o ./out/$@ $^ -DPORT=1010
 
 parallel: $(files)
-	$(CC) $(CFLAGS) -o ./out/$@ $^ -DPARALLEL_MODE
+	$(CC) $(CFLAGS) -o ./out/$@ $^ -DPARALLEL_MODE -DPORT=3030
 
 clean:
 	rm -f ./out/seq ./out/parallel

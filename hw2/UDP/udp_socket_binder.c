@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "udp_socket_binder.h"
 
 int init_udp_socket(int *socket_desc, struct sockaddr_in *server_addr, int port) {
@@ -19,7 +20,7 @@ int init_udp_socket(int *socket_desc, struct sockaddr_in *server_addr, int port)
     // Bind to the set port and IP:
     if (bind(*socket_desc, (struct sockaddr *) server_addr, sizeof(*server_addr)) < 0) {
         printf("\033[31m[_ERROR_]\033[0m binding failed.\n");
-        return 1;
+        exit(1);
     }
 
     printf("\033[34m[_INFO_]\033[0m binding done...\n");
