@@ -178,7 +178,7 @@ static size_t extract_answers(dns_message_t *dns_message, const unsigned char *b
     dns_message->section.answers = malloc(sizeof(dns_message_resource_t) * dns_message->header.ancount);
     for (int i = 0; i < dns_message->header.ancount; i += 1) {
         dns_message->section.answers[i].name = (unsigned char *) buffer + s_loc;
-        s_loc += strlen(dns_message->section.answers[i].name) + 1;
+        s_loc += strlen((char *) dns_message->section.answers[i].name) + 1;
         dns_message->section.answers[i].type = buffer[s_loc] << BYTE | buffer[s_loc + 1];
         dns_message->section.answers[i].class = buffer[s_loc + 2] << BYTE | buffer[s_loc + 3];
         dns_message->section.answers[i].ttl =
@@ -201,7 +201,7 @@ static size_t extract_answers(dns_message_t *dns_message, const unsigned char *b
 static size_t extract_authorities(const dns_message_t *dns_message, const unsigned char *buffer, size_t s_loc) {
     for (int i = 0; i < dns_message->header.nscount; i += 1) {
         dns_message->section.authorities[i].name = (unsigned char *) buffer + s_loc;
-        s_loc += strlen(dns_message->section.authorities[i].name) + 1;
+        s_loc += strlen((char *) dns_message->section.authorities[i].name) + 1;
         dns_message->section.authorities[i].type = buffer[s_loc] << BYTE | buffer[s_loc + 1];
         dns_message->section.authorities[i].class = buffer[s_loc + 2] << BYTE | buffer[s_loc + 3];
         dns_message->section.authorities[i].ttl =
@@ -218,7 +218,7 @@ void extract_additional(dns_message_t *dns_message, const unsigned char *buffer,
     dns_message->section.additional = malloc(sizeof(dns_message_resource_t) * dns_message->header.arcount);
     for (int i = 0; i < dns_message->header.arcount; i += 1) {
         dns_message->section.additional[i].name = (unsigned char *) buffer + s_loc;
-        s_loc += strlen(dns_message->section.additional[i].name) + 1;
+        s_loc += strlen((char *) dns_message->section.additional[i].name) + 1;
         dns_message->section.additional[i].type = buffer[s_loc] << BYTE | buffer[s_loc + 1];
         dns_message->section.additional[i].class = buffer[s_loc + 2] << BYTE | buffer[s_loc + 3];
         dns_message->section.additional[i].ttl =

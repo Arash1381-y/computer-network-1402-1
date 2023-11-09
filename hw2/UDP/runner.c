@@ -15,6 +15,10 @@
 #define PARALLEL_MODE 0
 #endif
 
+#ifndef PORT
+#define PORT 1234
+#endif
+
 
 void thread_serve(dns_resource_record_t *dns_resource_records, size_t dns_resource_records_size, int socket_desc,
                   struct sockaddr_in *client_addr);
@@ -33,7 +37,7 @@ int main() {
     // Create UDP socket:
     int socket_desc;
     struct sockaddr_in server_addr, client_addr;
-    init_udp_socket(&socket_desc, &server_addr, 4444);
+    init_udp_socket(&socket_desc, &server_addr, PORT);
 
 
     // Receive client's message:
