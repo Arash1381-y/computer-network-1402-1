@@ -19,6 +19,10 @@
 #define PORT 1234
 #endif
 
+#ifndef PATH
+#define PATH "/etc/my_hosts"
+#endif
+
 
 void thread_serve(dns_resource_record_t *dns_resource_records, size_t dns_resource_records_size, int socket_desc,
                   struct sockaddr_in *client_addr);
@@ -27,7 +31,7 @@ int main() {
     // Load DNS server data:
     dns_resource_record_t *dns_resource_records = malloc(sizeof(dns_resource_record_t) * 10);
     size_t dns_resource_records_size = 10;
-    if (load_dns_server_data("/etc/my_hosts", &dns_resource_records, &dns_resource_records_size) != 0) {
+    if (load_dns_server_data(PATH, &dns_resource_records, &dns_resource_records_size) != 0) {
         printf("\033[31m[_ERROR_]\033[0m can not load DNS server data.\n");
         return -1;
     }
