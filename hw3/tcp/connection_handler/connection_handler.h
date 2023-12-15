@@ -6,22 +6,26 @@
 #include <stdbool.h>
 #include <omp.h>
 #include <netinet/in.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
-#include "../data_types/buffer.h"
-#include "../socket/tcp_socket.h"
-#include "../data_types/buffer.h"
-#include "../logger/logger.h"
+#include "tcp_socket.h"
+#include "CbNB.h"
+#include "connection_handler.h"
+#include "http_request.h"
+#include "http_parser.h"
 
 
 /**
- * Call by server to handle a connection. The handler proxy the traffic to packet destination.
+ * @brief Call by server to handle a connection. The handler proxy the traffic to packet destination.
  * The supported requests includes http and https requests.
  *
- * @param server_add struct containing port and address of server listening socket
- * @param l logger
+ * @param server_add    struct containing port and address of server listening socket
  *
  * @return -1 if error otherwise 0
  */
-int handle_connection(int passive_sfd, logger_t *l);
+int handle_connection(int passive_sfd);
 
 #endif //TCP_CONNECTION_HANDLER_H

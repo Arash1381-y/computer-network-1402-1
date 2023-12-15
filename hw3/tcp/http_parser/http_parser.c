@@ -1,41 +1,51 @@
-#include <stdio.h>
-#include <malloc.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include "http_parser.h"
 
 
-#define ERROR -1
-#define OK 0
 
-
+// ============================ HELPER FUNCTIONS ========================================
+/**
+ * @brief get next line from a buffer (reaching \r\n)
+ *
+ * @param buffer input buffer
+ * @param line   dynamic array to save the line
+ * @param len    length of the line (in char/bytes)
+ *
+ * @return       read bytes from buffer (index of first character after /r/n)
+ */
 static int get_line(char *buffer, char **line, size_t len);
 
+/**
+ * @brief parse request line by reading buffer and save it into http_request struct.
+ * @param hr            http_request_t struct that save the request line
+ * @param buffer        buffer that data is parsed from it
+ * @param buffer_size   the size of buffer
+ *
+ * @return if request line is resolved return 0 otherwise -1(indicating an error)
+ */
 static int parse_request_line(http_request_t *hr, char *buffer, size_t buffer_size);
+// ======================================================================================
 
-static bool is_request_line_available(const http_request_t *hr);
 
-int http_parse_request(http_request_t *hr, char *buffer, size_t buffer_size) {
+int http_parse_request(http_request_t *hr, char *buffer, size_t buffer_size)
+{
 
     // check if rq_line is available
-    if (is_request_line_available(hr)) return OK;
+    if (http_request_line_is_valid(&hr->request_line)) return OK;
 
     // parse request line
     int offset;
-    if ((offset = parse_request_line(hr, buffer, buffer_size)) < 0) return ERROR;
+    if ((offset = parse_request_line(hr, buffer, buffer_size)) < 0) return -1;
+
+    //TODO: parse headers if available and save it into a cache
     return offset;
 }
 
-static bool is_request_line_available(const http_request_t *hr) {
-    return hr->request_line.method != 0 && hr->request_line.path.host != NULL && hr->request_line.version != 0.0;
-}
-
-static int parse_request_line(http_request_t *hr, char *buffer, size_t buffer_size) {
+static int parse_request_line(http_request_t *hr, char *buffer, size_t buffer_size)
+{
 
     char *request_line;
     size_t parsed_offset = get_line(buffer, &request_line, buffer_size);
-    if (parsed_offset == EOF) return ERROR;
+    if (parsed_offset == EOF) return -1;
 
     // parse request line
     char *method = strtok(request_line, " ");
@@ -74,7 +84,8 @@ static int parse_request_line(http_request_t *hr, char *buffer, size_t buffer_si
 }
 
 
-static int get_line(char *buffer, char **line, size_t len) {
+static int get_line(char *buffer, char **line, size_t len)
+{
 
     // read buffer until reaching \r\n
     int end_index = -1;
@@ -94,10 +105,11 @@ static int get_line(char *buffer, char **line, size_t len) {
     memcpy(*line, buffer, end_index);
     (*line)[end_index] = '\0';
 
-    return end_index;
+    return end_index + 1;
 }
 
 
-int stringify_http_request(http_request_t *hr, char **buffer, size_t *buffer_size) {
+int stringify_http_request(http_request_t *hr, char **buffer, size_t *buffer_size)
+{
 
 }
