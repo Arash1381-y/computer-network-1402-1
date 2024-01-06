@@ -8,15 +8,15 @@ includes_header := ./CbNB ./connection_handler ./data_types ./http_parser ./sock
 # add -I to the beginning of each include path
 includes := $(foreach d, $(includes_header), -I$d)
 
-
+dest := ./out/proxy_server
 
 .PHONY: all compile
 
 all: compile
 
-compile: proxy_server
+compile: $(dest)
 
-proxy_server: $(files)
+$(dest): $(files)
 	$(cc) $(flags) $^ $(includes) -o $@
 
 clean:
