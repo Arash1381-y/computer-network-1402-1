@@ -44,7 +44,7 @@ static int parse_request_line(http_request_t *hr, char *buffer, size_t buffer_si
 {
 
     char *request_line;
-    size_t parsed_offset = get_line(buffer, &request_line, buffer_size);
+    ssize_t parsed_offset = get_line(buffer, &request_line, buffer_size);
     if (parsed_offset == EOF) return -1;
 
     // parse request line
@@ -88,8 +88,9 @@ static int get_line(char *buffer, char **line, size_t len)
 {
 
     // read buffer until reaching \r\n
+
     int end_index = -1;
-    for (int i = 0; i < len; i += 1) {
+    for (ssize_t i = 0; i < (ssize_t)len; i += 1) {
         if (buffer[i] == '\r' && buffer[i + 1] == '\n') {
             end_index = i;
             break;
@@ -106,10 +107,4 @@ static int get_line(char *buffer, char **line, size_t len)
     (*line)[end_index] = '\0';
 
     return end_index + 1;
-}
-
-
-int stringify_http_request(http_request_t *hr, char **buffer, size_t *buffer_size)
-{
-
 }

@@ -125,7 +125,7 @@ get_next_connection(Fd passive_sfd, struct sockaddr_in *client_addr, socklen_t *
 {
     *active_cli_srv_sfd = accept(passive_sfd, (struct sockaddr *) client_addr, len_client_addr);
 
-    if (active_cli_srv_sfd < 0) {
+    if (*active_cli_srv_sfd < 0) {
         CBNB_LOG(ERROR, "error accepting connection");
         return -1;
     }

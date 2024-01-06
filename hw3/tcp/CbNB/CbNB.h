@@ -39,7 +39,7 @@
 
 
 typedef enum {
-    DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3, FATAL = 4
+    DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3, FATAL = 4, NONE = 5
 } CBNB_LOG_LEVEL;
 
 void cbnb_log(CBNB_LOG_LEVEL level, ConstString format, ...);

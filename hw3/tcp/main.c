@@ -11,7 +11,7 @@
 #define THREADS_NUM 12
 
 
-int main(int argc, char *argv[])
+int main()
 {
     int err;
     // create TCP socket (user -> proxy server)
