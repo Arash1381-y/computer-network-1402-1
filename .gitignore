@@ -2,6 +2,7 @@
 **/*.pdf
 **/*.zip
 **/cmake-build-debug/
-**/__pycache__/
+**/__pycache__
 **/*.out
 **/out/
+**/venv
